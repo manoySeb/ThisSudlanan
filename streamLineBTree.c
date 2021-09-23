@@ -11,12 +11,19 @@ typedef struct BTreeNode {
   struct BTreeNode *link[MAX + 1];
 }*BtreePtr;
 
+// Create a node
 BtreePtr createNode(int val, BtreePtr child, BtreePtr root);
+// Insert node
 void insertNode(int val, int pos, BtreePtr node, BtreePtr child);
+// Split node
 void splitNode(int val, int *pval, int pos, BtreePtr node, BtreePtr child, BtreePtr *newNode);
+// Set the value
 int setValue(int val, int *pval, BtreePtr node, BtreePtr *child);
+// Insert the value
 void insert(int val, BtreePtr root);
+// Search node
 void search(int val, int *pos, BtreePtr myNode);
+// Traverse then print the nodes
 void traversal(BtreePtr myNode);
 
 int main() {
@@ -156,7 +163,7 @@ void search(int val, int *pos, BtreePtr myNode) {
   return;
 }
 
-// Traverse then nodes
+// Traverse then print the nodes
 void traversal(BtreePtr myNode) {
   int i;
   if (myNode) {
