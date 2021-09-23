@@ -11,6 +11,35 @@ typedef struct BTreeNode {
   struct BTreeNode *link[MAX + 1];
 }*BtreePtr;
 
+BtreePtr createNode(int val, BtreePtr child, BtreePtr root);
+void insertNode(int val, int pos, BtreePtr node, BtreePtr child);
+void splitNode(int val, int *pval, int pos, BtreePtr node, BtreePtr child, BtreePtr *newNode);
+int setValue(int val, int *pval, BtreePtr node, BtreePtr *child);
+void insert(int val, BtreePtr root);
+void search(int val, int *pos, BtreePtr myNode);
+void traversal(BtreePtr myNode);
+
+int main() {
+  int val, ch;
+  BtreePtr root;
+
+  insert(8,root);
+  insert(9,root);
+  insert(10,root);
+  insert(11,root);
+  insert(15,root);
+  insert(16,root);
+  insert(17,root);
+  insert(18,root);
+  insert(20,root);
+  insert(23,root);
+
+  traversal(root);
+
+  printf("\n");
+  search(11, &ch, root);
+}
+
 // Create a node
 BtreePtr createNode(int val, BtreePtr child, BtreePtr root) {
   BtreePtr newNode;
@@ -137,25 +166,4 @@ void traversal(BtreePtr myNode) {
     }
     traversal(myNode->link[i]);
   }
-}
-
-int main() {
-  int val, ch;
-  BtreePtr root;
-
-  insert(8,root);
-  insert(9,root);
-  insert(10,root);
-  insert(11,root);
-  insert(15,root);
-  insert(16,root);
-  insert(17,root);
-  insert(18,root);
-  insert(20,root);
-  insert(23,root);
-
-  traversal(root);
-
-  printf("\n");
-  search(11, &ch, root);
 }
