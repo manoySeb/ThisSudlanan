@@ -11,10 +11,8 @@ typedef struct BTreeNode {
   struct BTreeNode *link[MAX + 1];
 }*BtreePtr;
 
-BtreePtr root;
-
 // Create a node
-BtreePtr createNode(int val, BtreePtr child) {
+BtreePtr createNode(int val, BtreePtr child, BtreePtr root) {
   BtreePtr newNode;
 
   newNode = (BtreePtr)malloc(sizeof(struct BTreeNode));
@@ -69,7 +67,7 @@ void splitNode(int val, int *pval, int pos, BtreePtr node, BtreePtr child, Btree
 // Set the value
 int setValue(int val, int *pval, BtreePtr node, BtreePtr *child) {
   int pos;
-  if (!node) {
+  if (node == NULL) {
     *pval = val;
     *child = NULL;
     return 1;
@@ -98,13 +96,13 @@ int setValue(int val, int *pval, BtreePtr node, BtreePtr *child) {
 }
 
 // Insert the value
-void insert(int val) {
+void insert(int val, BtreePtr root) {
   int flag, i;
   BtreePtr child;
 
   flag = setValue(val, &i, root, &child);
   if (flag){
-    root = createNode(i, child);
+    root = createNode(i, child, root);
   }
 }
 
@@ -143,17 +141,18 @@ void traversal(BtreePtr myNode) {
 
 int main() {
   int val, ch;
+  BtreePtr root;
 
-  insert(8);
-  insert(9);
-  insert(10);
-  insert(11);
-  insert(15);
-  insert(16);
-  insert(17);
-  insert(18);
-  insert(20);
-  insert(23);
+  insert(8,root);
+  insert(9,root);
+  insert(10,root);
+  insert(11,root);
+  insert(15,root);
+  insert(16,root);
+  insert(17,root);
+  insert(18,root);
+  insert(20,root);
+  insert(23,root);
 
   traversal(root);
 
