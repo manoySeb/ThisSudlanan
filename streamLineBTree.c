@@ -1,176 +1,181 @@
-// Searching a key on a B-tree in C
-
 #include <stdio.h>
 #include <stdlib.h>
+#include<string.h>
+#include <math.h>
 
 #define MAX 3
 #define MIN 2
 
-typedef struct BTreeNode {
-  int val[MAX + 1], count;
-  struct BTreeNode *link[MAX + 1];
-}*BtreePtr;
+typedef struct node {
+	int val[MAX], count;
+	struct node *link[MAX+1];
+}ctype,*BtreePtr;
 
-// Create a node
-BtreePtr createNode(int val, BtreePtr child, BtreePtr root);
-// Insert node
-void insertNode(int val, int pos, BtreePtr node, BtreePtr child);
-// Split node
-void splitNode(int val, int *pval, int pos, BtreePtr node, BtreePtr child, BtreePtr *newNode);
-// Set the value
-int setValue(int val, int *pval, BtreePtr node, BtreePtr *child);
-// Insert the value
-void insert(int val, BtreePtr root);
-// Search node
-void search(int val, int *pos, BtreePtr myNode);
-// Traverse then print the nodes
-void traversal(BtreePtr myNode);
+typedef enum boolean {TRUE, FALSE};
+
+void initTree(BtreePtr *B);
+void insert(BtreePtr *B,int val);
+BtreePtr createNode(int val);
+BtreePtr addAfterMid(BtreePtr *B,int val);
+void insertSorted(BtreePtr *B,int val, int x);
+void split(BtreePtr *root,BtreePtr *B);
+void search(BtreePtr B, int val);
+void printTree(BtreePtr B);
 
 int main() {
-  int val, ch;
-  BtreePtr root;
-
-  insert(8,root);
-  insert(9,root);
-  insert(10,root);
-  insert(11,root);
-  insert(15,root);
-  insert(16,root);
-  insert(17,root);
-  insert(18,root);
-  insert(20,root);
-  insert(23,root);
-
-  traversal(root);
-
-  printf("\n");
-  search(11, &ch, root);
+	BtreePtr root;
+	int val, ch;
+	
+	initTree(&root);
+	insert(&root,5);
+	insert(&root,10);
+	insert(&root,15);
+	insert(&root,4);
+	insert(&root,11);
+	insert(&root,6);
+	insert(&root,13);
+/* */
+	printTree(root);
+ 
+	printf("\n");
+	//search(11, &ch, root);
 }
 
-// Create a node
-BtreePtr createNode(int val, BtreePtr child, BtreePtr root) {
-  BtreePtr newNode;
-
-  newNode = (BtreePtr)malloc(sizeof(struct BTreeNode));
-  newNode->val[1] = val;
-  newNode->count = 1;
-  newNode->link[0] = root;
-  newNode->link[1] = child;
-  return newNode;
+//initialize tree
+void initTree(BtreePtr *B)
+{
+	*B=NULL;
 }
 
-// Insert node
-void insertNode(int val, int pos, BtreePtr node, BtreePtr child) {
-  int j;
 
-  for(j = node->count; j > pos; j--) {
-    node->val[j + 1] = node->val[j];
-    node->link[j + 1] = node->link[j];
-  }
-  node->val[j + 1] = val;
-  node->link[j + 1] = child;
-  node->count++;
+BtreePtr addAfterMid(BtreePtr *B,int mid)
+{
+    BtreePtr temp=NULL;
+    int x,numEl;
+    if((*B)->count>mid){
+    	
+    temp=(BtreePtr)calloc(1,sizeof(ctype));
+		if(temp!=NULL){
+		    numEl=(*B)->count-mid-1;
+		    memcpy(temp->val,(*B)->val+mid+1,sizeof(int)*numEl);
+		    memcpy(temp->link,(*B)->link+mid+1,sizeof(BtreePtr)*numEl);
+			temp->count=numEl;
+		}
+	}
+	return temp;
 }
 
-// Split node
-void splitNode(int val, int *pval, int pos, BtreePtr node, BtreePtr child, BtreePtr *newNode) {
-  int median, j;
-
-  if (pos > MIN)
-    median = MIN + 1;
-  else
-    median = MIN;
-
-  *newNode = (BtreePtr)malloc(sizeof(struct BTreeNode));
-  
-  for(j = median + 1; j <= MAX; j++) {
-    (*newNode)->val[j - median] = node->val[j];
-    (*newNode)->link[j - median] = node->link[j];
-  }
-  node->count = median;
-  (*newNode)->count = MAX - median;
-
-  if (pos <= MIN) {
-    insertNode(val, pos, node, child);
-  } else {
-    insertNode(val, pos - median, *newNode, child);
-  }
-  *pval = node->val[node->count];
-  (*newNode)->link[0] = node->link[node->count];
-  node->count--;
-}
-
-// Set the value
-int setValue(int val, int *pval, BtreePtr node, BtreePtr *child) {
-  int pos;
-  if (node == NULL) {
-    *pval = val;
-    *child = NULL;
-    return 1;
-  }
-
-  if (val < node->val[1]) {
-    pos = 0;
-  } else {
-    for (pos = node->count;
-       (val < node->val[pos] && pos > 1); pos--)
-      ;
-    if (val == node->val[pos]) {
-      printf("Duplicates are not permitted\n");
-      return 0;
-    }
-  }
-  if (setValue(val, pval, node->link[pos], child)) {
-    if (node->count < MAX) {
-      insertNode(*pval, pos, node, *child);
-    } else {
-      splitNode(*pval, pval, pos, node, *child, child);
-      return 1;
-    }
-  }
-  return 0;
+BtreePtr createNode(int val)
+{
+    BtreePtr temp;
+    temp=(BtreePtr)calloc(1,sizeof(ctype));
+		if(temp!=NULL){
+			temp->count=1;
+			temp->val[0]=val;
+		}
+	return temp;
 }
 
 // Insert the value
-void insert(int val, BtreePtr root) {
-  int flag, i;
-  BtreePtr child;
-
-  flag = setValue(val, &i, root, &child);
-  if (flag){
-    root = createNode(i, child, root);
-  }
+void insert(BtreePtr *B,int val) {
+	BtreePtr *trav,*currNode;
+	int x;
+	
+	if(*B==NULL){
+		*B=createNode(val);
+	}else{
+		currNode=trav=B;
+		while(*trav!=NULL){
+			for(x=0;x<(*trav)->count&&(*trav)->val[x]<val;x++){}
+			currNode=trav;
+			trav=&(*trav)->link[x];
+		}
+	
+		insertSorted(currNode,val,x);
+		if((*currNode)->count>=MAX){
+			split(B,currNode);
+		}
+	}
 }
 
-// Search node
-void search(int val, int *pos, BtreePtr myNode) {
-  if (!myNode) {
-    return;
-  }
+void insertSorted(BtreePtr *B,int val,int x)
+{
+	int numEl;
+	numEl=(*B)->count-x;
+	memcpy((*B)->val+x+1,(*B)->val+x,sizeof(int)*numEl);
+	memcpy((*B)->val+x+1,(*B)->val+x,sizeof(BtreePtr)*numEl);	
+	(*B)->count++;
+	(*B)->val[x]=val;
+	
+}
 
-  if (val < myNode->val[1]) {
-    *pos = 0;
-  } else {
-    for (*pos = myNode->count; (val < myNode->val[*pos] && *pos > 1); (*pos)--){
-      if (val == myNode->val[*pos]) {
-        printf("%d is found", val);
-        return;
+void split(BtreePtr *root,BtreePtr *NodeSplit)
+{
+	int mid,val;
+	mid=ceil(MAX-2/2);//median element
+	
+	val=(*NodeSplit)->val[mid];
+
+	BtreePtr *trav,*currNode,temp;
+	int x=0;
+	
+	while((*NodeSplit)->count>=MAX){
+		if((*root)->count==MAX){
+			temp=createNode(val);
+			temp->link[1]=addAfterMid(root,mid);
+			(*root)->count=mid;
+			temp->link[0]=*root;
+			
+			*root=temp;
+		}else{
+		currNode=trav=root;
+		while(trav!=NodeSplit){
+			for(x=0;x<(*trav)->count&&(*trav)->val[x]<val;x++){}
+			currNode=trav;
+			trav=&(*trav)->link[x];
+		}
+	
+		(*currNode)->val[x]=val;
+		(*currNode)->link[x+1]=addAfterMid(NodeSplit,mid);
+		(*currNode)->count++;
+		(*NodeSplit)->count=mid;//remove aftermid
+		NodeSplit=currNode;
+		}
+	}
+}
+
+
+void printTree(BtreePtr B)
+{
+	int x;
+	
+	if(B!=NULL){
+		for(x=0;x<B->count;x++){
+			printf("index %d:%d\t",x,B->val[x]);
+			printTree(B->link[x]);
+		}
+		puts("\n");
+		printTree(B->link[x]);
+	}
+}
+
+void search(BtreePtr B, int val)
+{
+  int pos, x, count;
+
+  while (B != NULL)
+  {
+    count = B->count;
+    for (x=0; x < B->count; x++)
+    printf(" %d",B->val[x]);
+    printf("\n");
+    for(pos = 0; pos < count && val > val_arr[pos]; pos++){
+      if (pos < count && val == B->val[pos]){
+      printf("Key %d found in position %d of last dispalyed
+      node\n", val, x);
       }
     }
+    B = B->link[pos];
   }
-  search(val, pos, myNode->link[*pos]);
-
-  return;
-}
-
-// Traverse then print the nodes
-void traversal(BtreePtr myNode) {
-  int i;
-  if (myNode) {
-    for (i = 0; i < myNode->count; i++) {
-      traversal(myNode->link[i]);
-      printf("%d ", myNode->val[i + 1]);
-    }
-    traversal(myNode->link[i]);
-  }
+  printf("Key %d is not available\n",key);
 }
