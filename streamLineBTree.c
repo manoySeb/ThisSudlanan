@@ -6,60 +6,6 @@
 #define MAX 3
 #define MIN 2
 
-<<<<<<< HEAD
-typedef struct BTreeNode {
-  int val[MAX + 1], count;
-  struct BTreeNode *link[MAX + 1];
-}*BtreePtr;
-
-// Initialize Btree
-void initBtree(BtreePtr *Tree);
-// Create a node
-BtreePtr createNode(int val, BtreePtr child, BtreePtr root);
-// Insert node
-void insertNode(int val, int pos, BtreePtr node, BtreePtr child);
-// Split node
-void splitNode(int val, int *pval, int pos, BtreePtr node, BtreePtr child, BtreePtr *newNode);
-// Set the value
-int setValue(int val, int *pval, BtreePtr node, BtreePtr *child);
-// Insert the value
-void insert(int val, BtreePtr root);
-// Search node
-void search(int val, int *pos, BtreePtr myNode);
-// Traverse then print the nodes
-void traversal(BtreePtr myNode);
-
-int main() {
-  int val, ch;
-  BtreePtr root;
-  initBtree(&root);
-
-  insert(8,root);
-  insert(9,root);
-  insert(10,root);
-  insert(11,root);
-  insert(15,root);
-  insert(16,root);
-  insert(17,root);
-  insert(18,root);
-  insert(20,root);
-  insert(23,root);
-
-  traversal(root);
-
-  printf("\n");
-  search(11, &ch, root);
-}
-
-// Initialize Btree
-void initBtree(BtreePtr *Tree){
-  *Tree = NULL;
-}
-
-// Create a node
-BtreePtr createNode(int val, BtreePtr child, BtreePtr root) {
-  BtreePtr newNode;
-=======
 typedef struct node {
 	int val[MAX], count;
 	struct node *link[MAX+1];
@@ -75,7 +21,6 @@ void insertSorted(BtreePtr *B,int val, int x);
 void split(BtreePtr *root,BtreePtr *B);
 void search(BtreePtr B, int val);
 void printTree(BtreePtr B);
->>>>>>> ce795843aa0a9d53fb3d7c12e11d43c0f15c626c
 
 int main() {
 	BtreePtr root;
@@ -224,13 +169,12 @@ void search(BtreePtr B, int val)
     for (x=0; x < B->count; x++)
     printf(" %d",B->val[x]);
     printf("\n");
-    for(pos = 0; pos < count && val > val_arr[pos]; pos++){
+    for(pos = 0; pos < count && val > B->val[pos]; pos++){
       if (pos < count && val == B->val[pos]){
-      printf("Key %d found in position %d of last dispalyed
-      node\n", val, x);
+      printf("Key %d found in position %d of last dispalyed node\n", val, x);
       }
     }
     B = B->link[pos];
   }
-  printf("Key %d is not available\n",key);
+  // printf("Key %d is not available\n",key);
 }
