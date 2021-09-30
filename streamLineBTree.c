@@ -11,6 +11,8 @@ typedef struct BTreeNode {
   struct BTreeNode *link[MAX + 1];
 }*BtreePtr;
 
+// Initialize Btree
+void initBtree(BtreePtr *Tree);
 // Create a node
 BtreePtr createNode(int val, BtreePtr child, BtreePtr root);
 // Insert node
@@ -29,6 +31,7 @@ void traversal(BtreePtr myNode);
 int main() {
   int val, ch;
   BtreePtr root;
+  initBtree(&root);
 
   insert(8,root);
   insert(9,root);
@@ -45,6 +48,11 @@ int main() {
 
   printf("\n");
   search(11, &ch, root);
+}
+
+// Initialize Btree
+void initBtree(BtreePtr *Tree){
+  *Tree = NULL;
 }
 
 // Create a node
