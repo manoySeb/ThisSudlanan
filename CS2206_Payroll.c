@@ -3,21 +3,30 @@
 #include <time.h>
 
 #define T_LEN 256
+#define MAX 15
 
-//typedef struct{
-//
-//	
-//	
-//	
-//	
-//	
-//}timeSheet;
+typedef struct{
+//	int ID;
+//	Date curr_date;
+//	Time Time_in;
+//	Time Time_out;
+//	Time Overtime;
+//	Time UnderTime;
+//	boolean isLate;
+}timeStamp;
+
+typedef struct{
+	int ID;
+	int employeeID;
+	timeStamp sheet[MAX];
+}timeSheet;
 
 void employeeTimeSheet(char Name[], time_t schedule);
 void employeeTimeIn(char Name[], time_t schedule);
 
 int main(){
 	int i,select;
+	
 	time_t sampleSched;
 
 	sampleSched = time(&sampleSched);
