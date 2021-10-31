@@ -66,7 +66,10 @@ void setDate(Date *A,int month, int day, int year);
 
 void displayTimeSheet(timeStamp A[]);
 void displayPayRoll(PayRoll payroll[]);
+void displayEmployeePayroll(PayRoll A);
 
+float calculateTax(float);
+float calculateSSS(float);
 int main(){
 	int i,select;
 	
@@ -82,6 +85,7 @@ int main(){
 	
 	initPayRoll(payroll,2);
 	displayPayRoll(payroll);
+	
 //	printf("Time Sheet");
 //	printf("\n\nList of Employees:");
 //	
@@ -179,20 +183,12 @@ void employeeTimeIn(char Name[], Time in, Time out){
 	
 }
 
-void displayTimeSheet(timeStamp stamp[]){
-	Date current; 
-
-	Time timeIn; // Input
-	Time timeOut;// Input
-	
-	Time totalTime;
-	Time overtime; // If TotalTime - 8 hours exceeds 1 hour
-	Time underTime; // If TotalTime < 8 hours;
-	
-	int isLate; // 1 if late 0 if not;
-	
+void displayTimeSheet(timeStamp stamp[]){	
 	int i;
-	printf("\n%20s | %6s   |  %2s   |   %2s   |  %s  |%s |%s| %s ","NAME", "DATE", "IN", "OUT", "TOTAL", "OVERTIME", "UNDERTIME","LATE");
+	
+	
+	printf("\nTIMESHEET RECORD");
+	printf("\n\n%20s | %6s   |  %2s   |   %2s   |  %s  |%s |%s| %s ","NAME", "DATE", "IN", "OUT", "TOTAL", "OVERTIME", "UNDERTIME","LATE");
 	for(i=0;i<16;i++){
 		printf("\n%20s | %d/%d/%d | %02d:%02d |  %02d:%02d  |  %02d:%02d  |  %02d:%02d  |  %02d:%02d  | %d ","GUIDO, CELSO JR., A.", stamp[i].current.month, stamp[i].current.day,stamp[i].current.year,
 																				stamp[i].timeIn.hour, stamp[i].timeIn.min, stamp[i].timeOut.hour, stamp[i].timeOut.min, stamp[i].totalTime.hour, stamp[i].totalTime.min, stamp[i].overtime.hour, stamp[i].overtime.min, stamp[i].underTime.hour, stamp[i].underTime.min,stamp[i].isLate);
@@ -200,30 +196,41 @@ void displayTimeSheet(timeStamp stamp[]){
 }
 
 void displayPayRoll(PayRoll payroll[]){
-	int i;
+	int i,select;
 	
-	printf("\n%8s|%20s|%10s|%10s|%2s|%2s|%2s|%10s|%10s|%10s|%10s|%10s|%10s|%10s|%10s|","ID","NAME NAME","MONTHLY","DAILY","DD","DA","DL","GROSS PAY","PHILHEALTH",
-		"PAG-IBIG","SSS","TAX","ADJUSTMENT","TOTALDEDUC","NET PAY");
+	printf("\nPAYROLL RECORD");
+	printf("\n\n%8s|%18s|%12s|%12s|%2s|%2s|%2s|%12s|%10s|%12s|%7s|%12s|%10s|%12s|%12s|","EMP ID","EMPLOYEE NAME","MONTHLY PAY","DAILY PAY","DD","DA","DL","GROSS PAY","PHILHEALTH",
+		"PAG-IBIG","SSS","TAX","ADJUSTMENT","DEDUCTIONS","NET PAY");
 	for(i=0;i<2;i++){
-		printf("\n%8d|%20s|%10f|%10f|%2d|%2d|%2d|%10f|%10f|%10f|%10f|%10f|%10f|%10f|%10f|",payroll[i].ID,"Name Name",		
-		payroll[i].monthlyRate,
-		payroll[i].dailyRate,
-		payroll[i].daysDuty,
-		payroll[i].daysAbsent,
-		payroll[i].daysLate,
-		payroll[i].grossPay,
-		payroll[i].PhilHealth,
-		payroll[i].PagIbig,
-		payroll[i].SSS,
-		payroll[i].Tax,
-		payroll[i].adjustment ,
-		payroll[i].totalDeduction,
-		payroll[i].netPay);
+		displayEmployeePayroll(payroll[i]);
 	}
+	
+	do{
+		printf("\n\n[0] <- Back");
+		printf("\nSelect Option:");
+		scanf(" %d",&select);
+	}while(select!=0);
+}
+
+void displayEmployeePayroll(PayRoll A){
+	printf("\n%8d|%18s|%12.2f|%12.2f|%2d|%2d|%2d|%12.2f|%10.2f|%12.2f|%7.2f|%12.2f|%10.2f|%12.2f|%12.2f|",A.ID,"Name Name",		
+		A.monthlyRate,
+		A.dailyRate,
+		A.daysDuty,
+		A.daysAbsent,
+		A.daysLate,
+		A.grossPay,
+		A.PhilHealth,
+		A.PagIbig,
+		A.SSS,
+		A.Tax,
+		A.adjustment ,
+		A.totalDeduction,
+		A.netPay);
 }
 
 
-float SSS(float pay){
+float calculateSSS(float pay){
 	float modulo;
 	float retVal;
 	
@@ -246,7 +253,7 @@ float SSS(float pay){
 	return retVal * .045;
 }
 
-float tax(float pay){
+float calculateTax(float pay){
 	float retVal;
 	
 	if(pay < 10416 ){
