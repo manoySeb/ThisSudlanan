@@ -350,3 +350,23 @@ float calculateTax(float pay){
 	return retVal;
 }
 
+float calculatePagibig(float pay){
+	return pay * 0.02;
+}
+
+float calculatePhilHealth(float pay){
+	float retVal;
+	
+	//If 10k below : 350, 70k up : 2450, 10k - 70k : 3.50%
+	
+	if(pay < 10000){
+		retVal = 350;
+	}else if(pay > 70000){
+		retVal = 2450;
+	}else{
+		retVal = pay * 0.035;
+	}
+	
+	return retVal;
+}
+
