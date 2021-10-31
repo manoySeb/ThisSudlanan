@@ -69,6 +69,7 @@ void setDate(Date *A,int month, int day, int year);
 void displayTimeSheet(timeStamp A[]);
 void displayPayRoll(PayRoll payroll[], int count);
 void displayEmployeePayroll(PayRoll A);
+void employeePayrollMenu(PayRoll *A);
 
 void payrollHeader();
 
@@ -145,7 +146,6 @@ void initTimeSheet(timeStamp A[]){
 		setTime(&(A[i].underTime),0,0);
 		setTime(&(A[i].totalTime),0,0);
 	}
-
 }
 
 void inputTime(Time *A){
@@ -202,12 +202,11 @@ void setDate(Date *A,int month, int day, int year){
 	A->year = year;
 }
 
-void employeeTimeSheet(char Name[], Time in, Time out, PayRoll payroll[]){
+void employeeTimeSheet(char Name[], Time in, Time out,PayRoll payroll[]){
 	int select;
 	
 	do{
 		printf("\nEmployee Schedule: %02d:%02d - %02d:%02d", in.hour, in.min, out.hour, out.min);
-	
 		printf("\n[1] Time Sheet Record");
 		printf("\n[2] Employee Time Stamp");
 		printf("\n[0] <- Back");
@@ -228,7 +227,6 @@ void employeeTimeIn(char Name[], Time in, Time out){
 
 void displayTimeSheet(timeStamp stamp[]){	
 	int i;
-	
 	
 	printf("\nTIMESHEET RECORD");
 	printf("\n\n%20s | %6s   |  %2s   |   %2s   |  %s  |%s |%s| %s ","NAME", "DATE", "IN", "OUT", "TOTAL", "OVERTIME", "UNDERTIME","LATE");
@@ -255,13 +253,34 @@ void displayPayRoll(PayRoll payroll[],int count){
 	}while(select < 0 || 1 < select);
 	
 	if(select==1){
-		printf("\nEnter ID: ");
+		printf("\nEnter Employee ID: ");
 		scanf(" %d", &input);
 		for(i=0;i<count && payroll[i].ID != input;i++){}
 		if(i!=count){
-			payrollHeader();
-			displayEmployeePayroll(payroll[i]);	
+//			printf("\nEmployee Pay Roll");
+//			payrollHeader();
+//			displayEmployeePayroll(payroll[i]);	
+			employeePayrollMenu(&(payroll[i]));
 		}
+	}
+}
+
+void employeePayrollMenu(PayRoll *A){
+	int select;
+	
+	printf("\nEmployee Pay Roll");
+	payrollHeader();
+	displayEmployeePayroll(*A);	
+	
+	do{
+		printf("\n\n[1] Employee Time Sheet");
+		printf("\n[0] <-Back");
+		printf("\nSelect Option: ");
+		scanf(" %d",&select);
+	}while(select < 0);
+	
+	if(select==1){
+		displayTimeSheet(A->TimeSheet);
 	}
 }
 
