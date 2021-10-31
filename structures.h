@@ -1,5 +1,5 @@
-#ifndef STRUCTURES_H
-#define STRCUTURES_H
+#ifndef STRUCTURES
+#define STRCUTURES
  
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +8,7 @@
 typedef struct{
 	char firstname[50];
 	char lastname[50];
+	char mi;
 }Fullname;
 
 typedef struct{
@@ -29,19 +30,40 @@ typedef struct{
 }Personal_Information;
 
 typedef struct{
+	int employee_id;
  	Personal_Information information;
+ 	
  	int SSS;
  	int Philhealth;
  	int PagIbig;
- 	float RatePerHour;
- 	int HoursWorked;
+ 	
+ 	float Rate;
+ 	char Type[10];
 }Employee;
 
 typedef struct{
+	int admin_id;
  	Personal_Information information;
  	Credentials credential;
 }Admin;
 
- 	
- 
+typedef struct{
+	int employeeID;
+
+	int daysDuty;
+	int daysAbsent;
+	int daysLate;
+	
+	float grossPay;
+	
+	float PhilHealth; 		//If 10k below : 350, 70k up : 2450, 10k - 70k : 3.50%
+	float PagIbig;			// 2% from employee
+	float SSS; 				// Monthly Compensation * 4.5%
+	float Tax; 				// Table sent sa GC
+	
+	float adjustment; 		// Default 0;
+	float totalDeduction; 	//Based on Late
+	float netPay;
+}Payroll;
+
 #endif

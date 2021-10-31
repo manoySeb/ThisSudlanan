@@ -1,248 +1,113 @@
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <math.h>
 
-#define T_LEN 256
-#define MAX 16
-
-typedef struct{
-	int hour; // 0 -> 23
-	int min; // 0 -59
-}Time;
-
-typedef struct{
-	int month; // 1 - 12
-	int day; // 1 - 31
-	int year; // Default 2000
-}Date;
-
-typedef struct{
-	Date current; 
-
-	Time timeIn; // Input
-	Time timeOut;// Input
-	
-	Time totalTime;
-	Time overtime; // If TotalTime - 8 hours exceeds 1 hour
-	Time underTime; // If TotalTime < 8 hours;
-	
-	int isLate; // 1 if late 0 if not;
-}timeStamp;
-
+#define MAX 64
 typedef struct{
 	int ID;
 	//int employeeID;
 	
 	char Name[20]; // For Now rani
-	
 	float monthlyRate; // Fixed Wage
 	float dailyRate; // Needs Calculation
-	
-	timeStamp TimeSheet[MAX];
-	int daysCount;//1-15 , 16 to [28,29,30,31]
-	
+
 	int daysDuty;
 	int daysAbsent;
 	int daysLate;
 	
 	float grossPay;
-	float PhilHealth; //If 10k below : 350, 70k up : 2450, 10k - 70k : 3.50%
-	float PagIbig;// 2% from employee
-	float SSS; // Monthly Compensation * 4.5%
-	float Tax; // Table sent sa GC
-	float adjustment; // Default 0;
-	float totalDeduction; //Based on Late
+	float PhilHealth; 		//If 10k below : 350, 70k up : 2450, 10k - 70k : 3.50%
+	float PagIbig;			// 2% from employee
+	float SSS; 				// Monthly Compensation * 4.5%
+	float Tax; 				// Table sent sa GC
+	float adjustment; 		// Default 0;
+	float totalDeduction; 	//Based on Late
 	float netPay;
-	
 }PayRoll;
 
-void initPayRoll(PayRoll payroll[], int count);
+typedef struct{
+	PayRoll Payroll[MAX];
+	int count;
+}PayList;
 
-void employeeTimeSheet(char Name[], Time in, Time out,PayRoll payroll[]);
-void employeeTimeIn(char Name[], Time in, Time out);
-
-void initTimeSheet(timeStamp A[]);
-void setTime(Time *A,int hour, int min);
-void setDate(Date *A,int month, int day, int year);
-
-void displayTimeSheet(timeStamp A[]);
-void displayPayRoll(PayRoll payroll[], int count);
+void initPayRoll(PayRoll *P);
+void displayPayRoll(PayList P);
 void displayEmployeePayroll(PayRoll A);
 void employeePayrollMenu(PayRoll *A);
-
 void payrollHeader();
 void displayPaySlip(PayRoll A);
+
+void editDays(int *A);
+void editAdjustments(float *);
 float calculateTax(float);
 float calculateSSS(float);
+float calculatePagibig(float pay);
+float calculatePhilhealth(float pay);
+
+void updateRecord(PayRoll *A);
+
+PayList populatePayList(char filename[]);
+
 int main(){
 	int i,select;
 	
-	PayRoll payroll[3];
-		
-	Time in, out;
+	PayList P = populatePayList("payroll.bin");
+	P.count = 3;
+	initPayRoll(&P.Payroll[0]);
+	initPayRoll(&P.Payroll[1]);
+	initPayRoll(&P.Payroll[2]);
+	P.Payroll[0].ID = 1000;
+	P.Payroll[1].ID = 1001;
+	P.Payroll[2].ID = 1002;
+	strcpy(P.Payroll[0].Name, "CAPAO, BONA MARIE");
+	strcpy(P.Payroll[1].Name, "GUIDO, CELSO JR.");
+	strcpy(P.Payroll[2].Name, "VILLANUEVA, SEB");
 	
-	in.hour = 8;
-	in.min = 0;
-	
-	out.hour = 16;
-	out.min = 0;
-	
-	initPayRoll(payroll,3);
-	strcpy(payroll[1].Name,"GUIDO, CELSO JR.");
-	payroll[1].ID = 1;
-	displayPayRoll(payroll, 3);
-	
-//	printf("Time Sheet");
-//	printf("\n\nList of Employees:");
-//	
-//	for(i=1;i<=1;i++){
-//		printf("\n[%d] %s ",i,"GUIDO, CELSO JR., A.");
-//	}
-//	
-//	printf("\n\nSelect Employee: ");
-//	scanf(" %d",&select);
-//	
-//	if(select==1){
-//		employeeTimeSheet("GUIDO, CELSO JR., A",in,out, payroll);
-//	}
-	
-	
+	displayPayRoll(P);	
 }
 
-void initPayRoll(PayRoll payroll[], int count){
-	int i;
-	
-	for(i=0;i<count;i++){
-		payroll[i].ID=0;
-		//payroll[i].employeeID=0;
-		
-		payroll[i].monthlyRate=0; 		// Fixed Wage
-		payroll[i].dailyRate=0; 		// Needs Calculation
-		payroll[i].daysCount=15;		//1-15 , 16 to [28,29,30,31]
-		payroll[i].daysDuty=0;
-		payroll[i].daysAbsent=0;
-		payroll[i].daysLate=0;
-		payroll[i].grossPay=0;
-		payroll[i].PhilHealth=0; 		//If 10k below : 350, 70k up : 2450, 10k - 70k : 3.50%
-		payroll[i].PagIbig=0;			// 2% from employee
-		payroll[i].SSS=0; 				// Monthly Compensation * 4.5%
-		payroll[i].Tax=0;				// Table sent sa GC
-		payroll[i].adjustment=0; 		// Default 0;
-		payroll[i].totalDeduction=0; 	//Based on Late
-		payroll[i].netPay=0;
-		initTimeSheet(payroll[i].TimeSheet);
-	}
-}
-
-void initTimeSheet(timeStamp A[]){
-	int i;
-	for(i=0;i<MAX;i++){
-		setDate(&(A[i].current),1,1,2000);
-		A[i].isLate = 0;
-		setTime(&(A[i].timeIn),0,0);
-		setTime(&(A[i].timeOut),0,0);
-		setTime(&(A[i].overtime),0,0);
-		setTime(&(A[i].underTime),0,0);
-		setTime(&(A[i].totalTime),0,0);
-	}
-}
-
-void inputTime(Time *A){
-	int hour, min;
-	
-	do{
-		printf("\nEnter Hour: ");
-		scanf(" %d", &hour);
-	}while(hour < 0 || 23 < hour);
-	
-	do{
-		printf("\nEnter Minute: ");
-		scanf(" %d", &min);
-	}while(0 <= min || min < 60);
-	
-	setTime(A,hour,min);
-}
-
-void setTime(Time *A,int hour, int min){
-	A->hour = hour;
-	A->min =  min;
-}
-
-int differenceTime(Time A, Time B){
-	int a = (A.hour * 60) + A.min;
-	int b = (B.hour * 60) + B.min;
-	return a - b;
-}
-
-void inputDate(Date *A){
-	int month,day,year;
-	
-	do{
-		printf("\nEnter Month: ");
-		scanf(" %d", &month);
-	}while(month < 0 || 12 < month);
-	
-	do{
-		printf("\nEnter Day: ");
-		scanf(" %d",&day);
-	}while(day < 0 || 31 < day);
-	
-	do{
-		printf("\nEnter Day: ");
-		scanf(" %d", &year);		
-	}while(year < 2000 || 2100 < year);
-	
-	setDate(A,month,day,year);
-}
-
-void setDate(Date *A,int month, int day, int year){
-	A->month = month;
-	A->day = day;
-	A->year = year;
-}
-
-void employeeTimeSheet(char Name[], Time in, Time out,PayRoll payroll[]){
-	int select;
-	
-	do{
-		printf("\nEmployee Schedule: %02d:%02d - %02d:%02d", in.hour, in.min, out.hour, out.min);
-		printf("\n[1] Time Sheet Record");
-		printf("\n[2] Employee Time Stamp");
-		printf("\n[0] <- Back");
-		printf("\n\nSelect Option: ");
-		scanf(" %d",&select);
-		if(select==1){
-			displayTimeSheet(payroll[0].TimeSheet);
-		}else if(select==2){
-			employeeTimeIn(Name, in, out);
+PayList populatePayList(char filename[]){	
+	PayList L;
+	PayRoll S;
+	FILE *fptr;
+	L.count = 0;
+	fptr = fopen(filename,"ab");
+	if(fptr!=NULL){	 	
+	 	while(fread(&S,sizeof(PayRoll),1,fptr)&&L.count<MAX){
+	 		L.Payroll[L.count++] = S;
 		}
-	}while(select != 0);
+		fclose(fptr);
+	}
+	return L;
 }
 
-void employeeTimeIn(char Name[], Time in, Time out){
-	printf("\nWew %s",Name);
-	
-}
-
-void displayTimeSheet(timeStamp stamp[]){	
-	int i;
-	
-	printf("\nTIMESHEET RECORD");
-	printf("\n\n%20s | %6s   |  %2s   |   %2s   |  %s  |%s |%s| %s ","NAME", "DATE", "IN", "OUT", "TOTAL", "OVERTIME", "UNDERTIME","LATE");
-	for(i=0;i<16;i++){
-		printf("\n%20s | %d/%d/%d | %02d:%02d |  %02d:%02d  |  %02d:%02d  |  %02d:%02d  |  %02d:%02d  | %d ","GUIDO, CELSO JR., A.", stamp[i].current.month, stamp[i].current.day,stamp[i].current.year,
-																				stamp[i].timeIn.hour, stamp[i].timeIn.min, stamp[i].timeOut.hour, stamp[i].timeOut.min, stamp[i].totalTime.hour, stamp[i].totalTime.min, stamp[i].overtime.hour, stamp[i].overtime.min, stamp[i].underTime.hour, stamp[i].underTime.min,stamp[i].isLate);
+void initPayRoll(PayRoll *P){
+	if(P != NULL){
+		P->ID=0;
+		//P->Payroll[i].employeeID=0;
+		P->monthlyRate=0; 		// Fixed Wage
+		P->dailyRate=500; 		// Needs Calculation
+		P->daysDuty=0;
+		P->daysAbsent=0;
+		P->daysLate=0;
+		P->grossPay=0;
+		P->PhilHealth=0; 		//If 10k below : 350, 70k up : 2450, 10k - 70k : 3.50%
+		P->PagIbig=0;			// 2% from employee
+		P->SSS=0; 				// Monthly Compensation * 4.5%
+		P->Tax=0;				// Table sent sa GC
+		P->adjustment=0; 		// Default 0;
+		P->totalDeduction=0; 	//Based on Late
+		P->netPay=0;
 	}
 }
 
-void displayPayRoll(PayRoll payroll[],int count){
+void displayPayRoll(PayList P){
 	int i,select,input;
 	
 	printf("\nPAYROLL RECORD");
 	payrollHeader();
-	for(i=0;i<count;i++){
-		displayEmployeePayroll(payroll[i]);
+	for(i=0;i<P.count;i++){
+		displayEmployeePayroll(P.Payroll[i]);
 	}
 	
 	do{
@@ -252,15 +117,12 @@ void displayPayRoll(PayRoll payroll[],int count){
 		scanf(" %d",&select);
 	}while(select < 0 || 1 < select);
 	
-	if(select==1){
+	while(select==1){
 		printf("\nEnter Employee ID: ");
 		scanf(" %d", &input);
-		for(i=0;i<count && payroll[i].ID != input;i++){}
-		if(i!=count){
-//			printf("\nEmployee Pay Roll");
-//			payrollHeader();
-//			displayEmployeePayroll(payroll[i]);	
-			employeePayrollMenu(&(payroll[i]));
+		for(i=0;i<P.count && P.Payroll[i].ID != input;i++){}
+		if(i!=P.count){
+			employeePayrollMenu(&(P.Payroll[i]));
 		}
 	}
 }
@@ -273,24 +135,64 @@ void employeePayrollMenu(PayRoll *A){
 	displayEmployeePayroll(*A);	
 	displayPaySlip(*A);	
 	do{
-		printf("\n\n[1] Employee Time Sheet");
+		printf("\n\n[1] Edit Employee's Days Duty (DD)");
+		printf("\n[2] Edit Employee's Days Absent (DD)");
+		printf("\n[3] Edit Employee's Days Late (DD)");
+		printf("\n[4] Edit Employee's Adjustment");
 		printf("\n[0] <-Back");
-		printf("\nSelect Option: ");
+		printf("\n\nSelect Option: ");
 		scanf(" %d",&select);
 	}while(select < 0);
 	
-	if(select==1){
-		displayTimeSheet(A->TimeSheet);
+	switch(select){
+		case 1:
+			editDays(&(A->daysDuty));
+			updateRecord(A);
+			break;
+		case 2:
+			editDays(&(A->daysAbsent));
+			updateRecord(A);
+			break;
+		case 3:
+			editDays(&(A->daysLate));
+			updateRecord(A);
+			break;
+		case 4:
+			editAdjustments(&(A->adjustment));
+			updateRecord(A);
+			break;
+		default:
+			break;
 	}
 }
 
+void editDays(int *A){
+	int input;
+	do{
+		printf("\nEnter Days: ");
+		scanf(" %d",&input);
+	}while(input < 0);
+	
+	*A = input;
+}
+
+void editAdjustments(float *A){
+	float input;
+	do{
+		printf("\nEnter Adjustment: ");
+		scanf(" %f",&input);
+	}while(input < 0);
+	
+	*A = input;
+}
+
 void payrollHeader(){
-	printf("\n\n%8s|%18s|%12s|%12s|%2s|%2s|%2s|%12s|%10s|%12s|%7s|%12s|%10s|%12s|%12s|","EMP ID","EMPLOYEE NAME","MONTHLY PAY","DAILY PAY","DD","DA","DL","GROSS PAY","PHILHEALTH",
+	printf("\n\n%8s|%18s|%9s|%12s|%2s|%2s|%2s|%12s|%10s|%12s|%7s|%12s|%10s|%12s|%12s|","EMP ID","EMPLOYEE NAME","EMP TYPE","SALARY","DD","DA","DL","GROSS PAY","PHILHEALTH",
 		"PAG-IBIG","SSS","TAX","ADJUSTMENT","DEDUCTIONS","NET PAY");
 }
 
 void displayEmployeePayroll(PayRoll A){
-	printf("\n%8d|%18s|%12.2f|%12.2f|%2d|%2d|%2d|%12.2f|%10.2f|%12.2f|%7.2f|%12.2f|%10.2f|%12.2f|%12.2f|",A.ID,A.Name,		
+	printf("\n%8d|%18s|%9.2f|%12.2f|%2d|%2d|%2d|%12.2f|%10.2f|%12.2f|%7.2f|%12.2f|%10.2f|%12.2f|%12.2f|",A.ID,A.Name,		
 		A.monthlyRate,
 		A.dailyRate,
 		A.daysDuty,
@@ -306,6 +208,23 @@ void displayEmployeePayroll(PayRoll A){
 		A.netPay);
 }
 
+void updateRecord(PayRoll *A){
+	
+	if(1){
+		A->grossPay = A->daysDuty * A->dailyRate;
+		A->totalDeduction = A->daysLate * 100;
+	}else{	
+		A->grossPay = A->dailyRate;	
+	}
+	
+	
+	A->SSS = calculateSSS(A->grossPay);
+	A->PhilHealth = calculatePhilhealth(A->grossPay);
+	A->PagIbig = calculatePagibig(A->grossPay);
+	A->Tax = calculateTax(A->grossPay);
+		
+	A->netPay = A->grossPay - A->SSS - A->PhilHealth - A->PagIbig - A->Tax + A->adjustment;
+}
 
 float calculateSSS(float pay){
 	float modulo;
@@ -326,7 +245,6 @@ float calculateSSS(float pay){
 			retVal = (pay - modulo) + 500;
 		}
 	}
-	
 	return retVal * .045;
 }
 
@@ -354,10 +272,8 @@ float calculatePagibig(float pay){
 	return pay * 0.02;
 }
 
-float calculatePhilHealth(float pay){
+float calculatePhilhealth(float pay){
 	float retVal;
-	
-	//If 10k below : 350, 70k up : 2450, 10k - 70k : 3.50%
 	
 	if(pay < 10000){
 		retVal = 350;
