@@ -11,6 +11,12 @@ typedef struct{
 }Fullname;
 
 typedef struct{
+	int SSS;
+	int PhilHealth;
+	int PagIbig;
+}Government_id;
+
+typedef struct{
 	char username[50];
 	char password[50];
 }Credentials;
@@ -29,15 +35,13 @@ typedef struct{
 }Personal_Information;
 
 typedef struct{
+	int employee_id;
  	Personal_Information information;
- 	int SSS;
- 	int Philhealth;
- 	int PagIbig;
- 	float RatePerHour;
- 	int HoursWorked;
+ 	Government_id ids;
 }Employee;
 
 typedef struct{
+	int admin_id;
  	Personal_Information information;
  	Credentials credential;
 }Admin;
