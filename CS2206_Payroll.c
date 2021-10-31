@@ -243,8 +243,6 @@ float calculateTax(float pay){
 		retVal = ((pay - 333333) * .35 ) + 100416;
 	}
 	
-	printf("\n\nPay = %f       Tax = %f",pay,retVal);
-	
 	return retVal;
 }
 
