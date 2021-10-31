@@ -72,7 +72,7 @@ void displayEmployeePayroll(PayRoll A);
 void employeePayrollMenu(PayRoll *A);
 
 void payrollHeader();
-
+void displayPaySlip(PayRoll A);
 float calculateTax(float);
 float calculateSSS(float);
 int main(){
@@ -271,7 +271,7 @@ void employeePayrollMenu(PayRoll *A){
 	printf("\nEmployee Pay Roll");
 	payrollHeader();
 	displayEmployeePayroll(*A);	
-	
+	displayPaySlip(*A);	
 	do{
 		printf("\n\n[1] Employee Time Sheet");
 		printf("\n[0] <-Back");
@@ -368,5 +368,44 @@ float calculatePhilHealth(float pay){
 	}
 	
 	return retVal;
+}
+
+void displayPaySlip(PayRoll A){
+	printf("\n\nPAYSLIP\n");
+	printf("\nEmployee ID%8d\nName%30s",A.ID,A.Name);
+	printf("\n---------------------------------------------\n");
+	printf("%45c\n%45c\nDays Duty%20d%16c\nDays Absent%18d%16c\nDays Late%20d%16c\n%45c\nGross Pay%29.2f%7c",
+		'|',
+		'|',
+		A.daysDuty,
+		'|',
+		A.daysAbsent,
+		'|',
+		A.daysLate,
+		'|',
+		'|',
+		A.grossPay,
+		'|'
+		);
+	printf("\n---------------------------------------------\n");
+	printf("%45c\n%45c\nPhilHealth%22.2f%13c\nPagIbig%25.2f%13c\nSSS%29.2f%13c\nTAX%29.2f%13c\nAdjustment%22.2f%13c\nTotal Deduction%17.2f%13c\n%45c\nNet Pay%31.2f%7c",
+		'|',
+		'|',
+		A.PhilHealth,
+		'|',
+		A.PagIbig,
+		'|',
+		A.SSS,
+		'|',
+		A.Tax,
+		'|',
+		A.adjustment,
+		'|',
+		A.totalDeduction,
+		'|',
+		'|',
+		A.netPay,
+		'|');
+	printf("\n---------------------------------------------\n");
 }
 
