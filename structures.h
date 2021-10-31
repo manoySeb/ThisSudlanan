@@ -1,5 +1,5 @@
-#ifndef STRUCTURES_H
-#define STRCUTURES_H
+#ifndef STRUCTURES
+#define STRCUTURES
  
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +8,7 @@
 typedef struct{
 	char firstname[50];
 	char lastname[50];
+	char mi;
 }Fullname;
 
 typedef struct{
@@ -33,8 +34,10 @@ typedef struct{
  	int SSS;
  	int Philhealth;
  	int PagIbig;
- 	float RatePerHour;
- 	int HoursWorked;
+ 	float Rate;
+ 	enum Type{
+ 		HOURLY, MONTHLY
+	};
 }Employee;
 
 typedef struct{
@@ -42,6 +45,4 @@ typedef struct{
  	Credentials credential;
 }Admin;
 
- 	
- 
 #endif
