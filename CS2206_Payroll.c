@@ -51,8 +51,16 @@ int main(){
 	int i,select;
 	
 	PayList P = populatePayList("payroll.bin");
-	
-	
+	P.count = 3;
+	initPayRoll(&P.Payroll[0]);
+	initPayRoll(&P.Payroll[1]);
+	initPayRoll(&P.Payroll[2]);
+	P.Payroll[0].ID = 1000;
+	P.Payroll[1].ID = 1001;
+	P.Payroll[2].ID = 1002;
+	strcpy(P.Payroll[0].Name, "CAPAO, BONA MARIE");
+	strcpy(P.Payroll[1].Name, "GUIDO, CELSO JR.");
+	strcpy(P.Payroll[2].Name, "VILLANUEVA, SEB");
 	
 	displayPayRoll(P);	
 }
