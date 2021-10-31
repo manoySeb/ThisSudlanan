@@ -150,49 +150,50 @@ void displayPayRoll(PayList P){
 
 void employeePayrollMenu(PayRoll *A){
 	int select;
-	
-	printf("\nEmployee Pay Roll");
-	payrollHeader();
-	displayEmployeePayroll(*A);	
-	
 	do{
-		printf("\n\n[1] Edit Employee's Days Duty (DD)");
-		printf("\n[2] Edit Employee's Days Absent (DD)");
-		printf("\n[3] Edit Employee's Days Late (DD)");
-		printf("\n[4] Edit Employee's Adjustment");
-		printf("\n[0] <-Back");
-		printf("\n\nSelect Option: ");
-		scanf(" %d",&select);
-	}while(select < 0);
-	
-	switch(select){
-		case 1:
-			editDays(&(A->daysDuty));
-			updateRecord(A);
-			loader();
-			system("cls");
-			break;
-		case 2:
-			editDays(&(A->daysAbsent));
-			updateRecord(A);
-			loader();
-			system("cls");
-			break;
-		case 3:
-			editDays(&(A->daysLate));
-			updateRecord(A);
-			loader();
-			system("cls");
-			break;
-		case 4:
-			editAdjustments(&(A->adjustment));
-			updateRecord(A);
-			loader();
-			system("cls");
-			break;
-		default:
-			break;
-	}
+		system("cls");
+		printf("\nEmployee Pay Roll");
+		payrollHeader();
+		displayEmployeePayroll(*A);
+		do{
+			printf("\n\n[1] Edit Employee's Days Duty (DD)");
+			printf("\n[2] Edit Employee's Days Absent (DD)");
+			printf("\n[3] Edit Employee's Days Late (DD)");
+			printf("\n[4] Edit Employee's Adjustment");
+			printf("\n[0] <-Back");
+			printf("\n\nSelect Option: ");
+			scanf(" %d",&select);
+		}while(select < 0);
+		
+		switch(select){
+			case 1:
+				editDays(&(A->daysDuty));
+				updateRecord(A);
+				loader();
+				system("cls");
+				break;
+			case 2:
+				editDays(&(A->daysAbsent));
+				updateRecord(A);
+				loader();
+				system("cls");
+				break;
+			case 3:
+				editDays(&(A->daysLate));
+				updateRecord(A);
+				loader();
+				system("cls");
+				break;
+			case 4:
+				editAdjustments(&(A->adjustment));
+				updateRecord(A);
+				loader();
+				system("cls");
+				break;
+			default:
+				break;
+		}
+	}while(select!=0);
 }
 
 void editDays(int *A){
