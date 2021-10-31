@@ -4,9 +4,7 @@
 
 #define MAX 64
 typedef struct{
-	int ID;
-	//int employeeID;
-	
+	int ID;	
 	char Name[20]; // For Now rani
 	float monthlyRate; // Fixed Wage
 	float dailyRate; // Needs Calculation

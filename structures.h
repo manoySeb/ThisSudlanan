@@ -30,7 +30,7 @@ typedef struct{
 }Personal_Information;
 
 typedef struct{
-	int empID;
+	int employee_id;
  	Personal_Information information;
  	
  	int SSS;
@@ -38,12 +38,11 @@ typedef struct{
  	int PagIbig;
  	
  	float Rate;
- 	enum Type{
- 		HOURLY, MONTHLY
-	};
+ 	char Type[10];
 }Employee;
 
 typedef struct{
+	int admin_id;
  	Personal_Information information;
  	Credentials credential;
 }Admin;
@@ -65,6 +64,6 @@ typedef struct{
 	float adjustment; 		// Default 0;
 	float totalDeduction; 	//Based on Late
 	float netPay;
-}PayRoll;
+}Payroll;
 
 #endif
